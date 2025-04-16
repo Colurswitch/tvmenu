@@ -1,0 +1,21 @@
+:root {
+    --tvmenu-panel-bg: rgba(0, 0, 0, 0.5);
+    --tvmenu-panel-mw: 700px;
+}
+
+body {
+    background: black;
+    color: white;
+}
+
+tvm-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: absolute;
+    top: 0; left: 0;
+    background: var(--tvmenu-panel-bg);
+}
