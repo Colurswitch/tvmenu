@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TVMenu Demo</title>
-    <script src="tvmenu.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="tvmenu.css">
 </head>
 <body>
-    
+    <tvm-panel>
+        <tvm-section class="active">
+            <tvm-item>
+                <span class="icon">
+                    <i class="material-icons">home</i>
+                </span>
+                <div class="right">
+                    <h3>Home</h3>
+                </div>
+            </tvm-item>
+        </tvm-section>
+    </tvm-panel>
+    <script>
+        /*var menu = new TVMenu({
+            items: [
+                {title: "Home", children: [
+                    new TVMenuItem({
+
+                    })
+                ]}
+            ]
+        })*/
+        
+    </script>
 </body>
 </html>
