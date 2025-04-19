@@ -53,7 +53,7 @@ tvm-panel tvm-item {
     display: flex;
     width: 100%;
     height: 55px;
-    transition: all .5s ease-out;
+    transition: all .25s ease-out;
 }
 
 tvm-panel tvm-item .icon {
@@ -85,7 +85,7 @@ tvm-panel tvm-item .right h3 {
     font-size: 1.5em;
 }
 
-tvm-panel tvm-item .right h3:last-child {
+tvm-panel tvm-item .right h3:last-child:not(:only-child) {
     text-align: end;
     margin-left: 10px;
 }

@@ -6,10 +6,17 @@
     <title>TVMenu Demo</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="tvmenu.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/google-sans');
+        * {
+            font-family: "Product Sans", sans-serif;
+        }
+    </style>
+
 </head>
 <body>
     <tvm-panel>
-        <tvm-section class="active">
+        <tvm-section class="">
             <tvm-item>
                 <span class="icon">
                     <i class="material-icons">home</i>
@@ -27,6 +34,35 @@
                     <h3>Settings</h3>
                     <h3>Value</h3>
                 </div>
+                <tvm-section class="active">
+                    <tvm-item>
+                        <span class="icon">
+                            <i class="material-icons">home</i>
+                        </span>
+                        <div class="right">
+                            <h3>Home</h3>
+                            <h3>Value</h3>
+                        </div>
+                    </tvm-item>
+                    <tvm-item>
+                        <span class="icon">
+                            <i class="material-icons">settings</i>
+                        </span>
+                        <div class="right">
+                            <h3>Settings</h3>
+                            <h3>Value</h3>
+                        </div>
+                    </tvm-item>
+                    <tvm-item>
+                        <span class="icon">
+                            <i class="material-icons">settings</i>
+                        </span>
+                        <div class="right">
+                            <h3>Settings</h3>
+                            <h3>Value</h3>
+                        </div>
+                    </tvm-item>
+                </tvm-section>
             </tvm-item>
             <tvm-item>
                 <span class="icon">
