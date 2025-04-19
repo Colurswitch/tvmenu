@@ -41,13 +41,15 @@ tvm-panel tvm-section {
     display: none;
 }
 
-tvm-panel tvm-section.active {
+tvm-panel tvm-section.active, tvm-panel tvm-section:not(.active) tvm-section.active {
     display: flex;
     flex-direction: column;
     width: 100%;
     padding: 10px 20px;
     max-width: var(--tvmenu-panel-mw);
 }
+
+
 
 tvm-panel tvm-item {
     display: flex;
