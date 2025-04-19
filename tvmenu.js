@@ -4,11 +4,11 @@ class TVMenu {
      *
      * @param {Object} options - Options for the TVMenu
      * @param {HTMLElement} [options.domElement] - The HTMLElement to use as the panel
-     * @param {{title: string, children: TVMenuItem[]}[]} options.items - The array of items to include in the menu.
+     * @param {{title: string, children: TVMenuItem[]}[]} options.sections - An array of sections, each containing a title and an array of children items
      */
     constructor(options) {
         this.domElement = options.domElement || document.createElement("tvm-panel");
-        this.items = options.items;
+        this.sections = options.sections;
     }
 }
 

@@ -19,6 +19,14 @@ tvm-panel {
     top: 0; left: 0;
     background: var(--tvmenu-panel-bg);
     overflow-y: auto;
+    opacity: 1;
+    transform: scale(1);
+    transition: all .5s ease-out;
+}
+
+tvm-panel.hidden {
+    transform: scale(0.8);
+    opacity: 0;
 }
 
 tvm-panel h1 {
@@ -44,6 +52,7 @@ tvm-panel tvm-section.active {
 tvm-panel tvm-item {
     display: flex;
     width: 100%;
+    height: 55px;
 }
 
 tvm-panel tvm-item .icon {
@@ -56,15 +65,40 @@ tvm-panel tvm-item .icon {
 tvm-panel tvm-item .icon * {
     width: 2em;
     height: 2em;
-    font-size: 3em !important;
+    font-size: 2em !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 tvm-panel tvm-item .right {
     width: 100%;
     max-width: 100%;
+    display: flex;
+    align-items: center;
 }
 
 tvm-panel tvm-item .right h5 {
     width: 100%;
-    margin: 7px;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+tvm-panel tvm-item .right h5:last-child {
+    text-align: end;
+    margin-left: 10px;
+}
+
+tvm-panel tvm-item:hover, tvm-panel tvm-item:focus, tvm-panel tvm-item.selected {
+    background: white;
+    color: black !important;
+    transform: scale(1.1);
+}
+
+tvm-panel tvm-item:focus {
+    outline: 3px solid orange
+}
+
+tvm-panel tvm-item:active {
+    transform: scale(.9);
 }
