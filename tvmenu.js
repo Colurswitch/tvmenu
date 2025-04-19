@@ -50,3 +50,5 @@ class TVMenuItem {
     this.children = options.children;
   }
 }
+
+export { TVMenu, TVMenuItem };
