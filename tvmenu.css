@@ -27,6 +27,7 @@ tvm-panel {
 tvm-panel.hidden {
     transform: scale(0.8);
     opacity: 0;
+    pointer-events: none;
 }
 
 tvm-panel h1 {
@@ -48,8 +49,6 @@ tvm-panel tvm-section.active, tvm-panel tvm-section:not(.active) tvm-section.act
     padding: 10px 20px;
     max-width: var(--tvmenu-panel-mw);
 }
-
-
 
 tvm-panel tvm-item {
     display: flex;
@@ -104,4 +103,23 @@ tvm-panel tvm-item:focus {
 
 tvm-panel tvm-item:active {
     transform: scale(.9);
+}
+
+tvm-panel tvm-dialog {
+    width: 100%;
+    height: 50vh;
+    outline: 1px solid white;
+    outline-offset: 2px;
+    z-index: 1000;
+    position: absolute;
+    top: 25%; bottom: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+tvm-panel:has(tvm-dialog) {
+    align-items: stretch;
+    justify-content: center;
 }
