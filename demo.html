@@ -16,49 +16,6 @@
 
 </head>
 <body>
-    <tvm-panel>
-        <tvm-section class="active">
-            <tvm-item>
-                <span class="icon">
-                    <i class="material-icons">home</i>
-                </span>
-                <div class="right">
-                    <h3>Home</h3>
-                    <h3>Value</h3>
-                </div>
-            </tvm-item>
-            <tvm-item>
-                <span class="icon">
-                    <i class="material-icons">settings</i>
-                </span>
-                <div class="right">
-                    <h3>Settings</h3>
-                    <h3>Value</h3>
-                </div>
-            </tvm-item>
-            <tvm-item>
-                <span class="icon">
-                    <i class="material-icons">settings</i>
-                </span>
-                <div class="right">
-                    <h3>Settings</h3>
-                    <h3>Value</h3>
-                </div>
-            </tvm-item>
-        </tvm-section>
-    </tvm-panel>
-    <tvm-panel>
-        <tvm-dialog>
-            <tvm-dialog-content>
-                <h3>Dialog</h3>
-                <h3>Value</h3>
-            </tvm-dialog-content>
-            <tvm-dialog-actions>
-                <button>Ok</button>
-                <button>Cancel</button>
-            </tvm-dialog-actions>
-        </tvm-dialog>
-    </tvm-panel>
     <script>
         /*var menu = new TVMenu({
             items: [
@@ -75,6 +32,12 @@
                 new TVMenuItem({
                     text: "Basic button",
                     type: "button",
+                    onSelect: () => menu.alert("Hello world"),
+                }),
+                new TVMenuItem({
+                    text: "Basic button with icon",
+                    type: "button",
+                    icon: `<i class="material-icons">addchart</i>`,
                     onSelect: () => menu.alert("Hello world"),
                 }),
                 new TVMenuItem({

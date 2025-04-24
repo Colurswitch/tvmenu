@@ -62,6 +62,8 @@ tvm-panel tvm-item .icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 64px;
+    height: 55px;
 }
 
 tvm-panel tvm-item .icon * {
@@ -88,7 +90,7 @@ tvm-panel tvm-item .right h3 {
 
 tvm-panel tvm-item .right h3:last-child:not(:only-child) {
     text-align: end;
-    margin-left: 10px;
+    margin-right: 20px;
 }
 
 tvm-panel tvm-item:hover, tvm-panel tvm-item:focus, tvm-panel tvm-item.selected {
@@ -108,7 +110,7 @@ tvm-panel tvm-item:active {
 tvm-panel tvm-item.is-separator {
     background: transparent;
     transform: scale(1);
-    color: rgba(255, 255, 255, 0.5);
+    color: rgb(125, 125, 125);
     pointer-events: none;
 }
 

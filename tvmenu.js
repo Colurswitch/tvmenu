@@ -13,10 +13,9 @@ class TVMenu {
         this.menuContainer = document.createElement("tvm-panel");
         this.mainInnerSection = document.createElement("tvm-section");
         this.dialogContainer = document.createElement("tvm-panel");
-        this.dialogContainer.classList.add("hidden")
+        this.dialogContainer.classList.add("hidden");
         this.mainInnerDialog = document.createElement("tvm-dialog");
-        
-        
+
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
         this.#createItemTree(this.items, this.mainInnerSection);
@@ -56,51 +55,127 @@ class TVMenu {
         }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
-            $newItem.innerHTML = `
-                <span class="icon">
-                    ${item.icon || ""}
-                </span>
-                <div class="right">
-                    <h3>${item.text}</h3>
-                    <h3>${["button","folder","separator"].includes(item.type) || !item.default ? "" : item.default}</h3>
-                </div>
-            `;
             if (idx == 0) $newItem.classList.add("active");
             if (item.default) $newItem.dataset.tvm_value = item.default;
             else {
                 if (item.type == "checkbox") $newItem.dataset.tvm_value = false;
-                else if (item.type == "number") $newItem.dataset.tvm_value = item.min?item.min:0;
+                else if (item.type == "number")
+                    $newItem.dataset.tvm_value = item.min ? item.min : 0;
                 else if (item.type == "input") $newItem.dataset.tvm_value = "";
             }
-            if (item.onSelect) $newItem.onclick = (evt) => {
-                if (item.type == "input" && item.onChange) this.prompt(
-                    item.text, 
-                    item.default, 
-                    item.isPassword ? "password" : "text", 
-                    item.onChange, 
-                    item.min, 
-                    item.max
-                ).then(value => item.value = value);
-                if (item.type == "checkbox") $newItem.dataset.tvm_value = !item.default;
-                else if (item.type == "number") this.prompt(
-                    item.text,
-                    item.default,
-                    min && max ? "range" : "number",
-                    item.onChange,
-                    item.min,
-                    item.max
-                ).then((value) => (item.value = value));
-
-                item.onSelect(evt);
+            $newItem.innerHTML = `
+                <span class="icon">
+                    ${item.icon || ``}
+                </span>
+                <div class="right">
+                    <h3>${item.text}</h3>
+                    <h3>${["button", "folder", "separator"].includes(item.type) ||
+                    !item.default
+                    ? ""
+                    : item.type == "checkbox"
+                        ? item.default
+                            ? item.default
+                            : $newItem.tvm_value
+                        : item.type == "number"
+                            ? item.default
+                                ? item.default
+                                : $newItem.tvm_value
+                            : item.type == "input"
+                                ? item.default
+                                    ? item.default
+                                    : $newItem.tvm_value
+                                : item.type == "enum" ??
+                                (item.default ? item.default : $newItem.tvm_value)
+                }</h3>
+                </div>
+            `;
+            $newItem.onclick = (evt) => {
+                if (item.type == "input" && item.onChange)
+                    this.prompt(
+                        item.text,
+                        item.default,
+                        item.isPassword ? "password" : "text",
+                        item.onChange,
+                        item.min,
+                        item.max
+                    ).then((value) => {
+                        $newItem.dataset.tvm_value = value;
+                        $newItem.innerHTML = `
+                            <span class="icon">
+                                ${item.icon || ``}
+                            </span>
+                            <div class="right">
+                                <h3>${item.text}</h3>
+                                <h3>${$newItem.dataset.tvm_value}</h3>
+                            </div>
+                        `;
+                    });
+                if (item.type == "checkbox")
+                    $newItem.dataset.tvm_value = !Boolean($newItem.dataset.tvm_value);
+                else if (item.type == "number")
+                    this.prompt(
+                        item.text,
+                        item.default,
+                        min && max ? "range" : "number",
+                        item.onChange,
+                        item.min,
+                        item.max
+                    ).then((value) => {
+                        $newItem.dataset.tvm_value = value;
+                        $newItem.innerHTML = `
+                            <span class="icon">
+                                ${item.icon || ``}
+                            </span>
+                            <div class="right">
+                                <h3>${item.text}</h3>
+                                <h3>${$newItem.dataset.tvm_value}</h3>
+                            </div>
+                        `;
+                    });
+                else if (item.type == "enum")
+                    this.prompt(
+                        item.text,
+                        item.default | 0,
+                        "select",
+                        item.onChange,
+                        item.possibleValues
+                    ).then((value) => {
+                        $newItem.dataset.tvm_value = value;
+                        $newItem.innerHTML = `
+                            <span class="icon">
+                                ${item.icon || ``}
+                            </span>
+                            <div class="right">
+                                <h3>${item.text}</h3>
+                                <h3>${$newItem.dataset.tvm_value}</h3>
+                            </div>
+                        `;
+                    });
+                $newItem.innerHTML = `
+                    <span class="icon">
+                        ${item.icon || ``}
+                    </span>
+                    <div class="right">
+                        <h3>${item.text}</h3>
+                        <h3>${$newItem.dataset.tvm_value}</h3>
+                    </div>
+                `;
+                if (item.onSelect) item.onSelect(evt);
             };
-            else if (item.type == "folder") {
+            if (item.type == "folder") {
                 const _ = document.createElement("tvm-section");
                 $newItem.parentElement.appendChild(_);
                 $newItem.onclick = (evt) => {
                     $newItem.parentElement.classList.remove("active");
                     _.classList.add("active");
-                }
-                this.#createItemTree(item.children, _, true, item.text, $newItem.parentElement);
+                };
+                this.#createItemTree(
+                    item.children,
+                    _,
+                    true,
+                    item.text,
+                    $newItem.parentElement
+                );
             }
             container.appendChild($newItem);
         });
@@ -124,7 +199,7 @@ class TVMenu {
                 this.dialogContainer.classList.add("hidden");
                 this.dialogContainer.innerHTML = "";
                 resolve();
-            }
+            };
             $newActions.appendChild($acceptButton);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);
@@ -143,7 +218,15 @@ class TVMenu {
      * @param {number} [max] - The maximum value of the input field.
      * @returns {Promise<string>} A promise that resolves with the value of the input when the dialog is dismissed.
      */
-    prompt(message, defaultValue = "", type = "text", onchange, values, min, max) {
+    prompt(
+        message,
+        defaultValue = "",
+        type = "text",
+        onchange,
+        values,
+        min,
+        max
+    ) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
             this.dialogContainer.innerHTML = "";
@@ -170,14 +253,14 @@ class TVMenu {
                     this.dialogContainer.classList.add("hidden");
                     this.dialogContainer.innerHTML = "";
                     resolve($newSelect.value);
-                }
+                };
                 $cancelButton = document.createElement("button");
                 $cancelButton.innerHTML = "Cancel";
                 $cancelButton.onclick = () => {
                     this.dialogContainer.classList.add("hidden");
                     this.dialogContainer.innerHTML = "";
                     resolve(defaultValue);
-                }
+                };
                 $newActions.appendChild($okButton);
                 $newActions.appendChild($cancelButton);
                 $newContent.appendChild($newSelect);
@@ -196,21 +279,21 @@ class TVMenu {
                     this.dialogContainer.classList.add("hidden");
                     this.dialogContainer.innerHTML = "";
                     resolve($newInput.value);
-                }
+                };
                 $cancelButton = document.createElement("button");
                 $cancelButton.innerHTML = "Cancel";
                 $cancelButton.onclick = () => {
                     this.dialogContainer.classList.add("hidden");
                     this.dialogContainer.innerHTML = "";
                     resolve(defaultValue);
-                }
+                };
                 $newActions.appendChild($okButton);
                 $newActions.appendChild($cancelButton);
             }
             this.mainInnerDialog.appendChild($newContent);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);
-        })
+        });
     }
 
     /**
@@ -230,19 +313,19 @@ class TVMenu {
                 this.dialogContainer.classList.add("hidden");
                 this.dialogContainer.innerHTML = "";
                 resolve(true);
-            }
+            };
             const $cancelButton = document.createElement("button");
             $cancelButton.innerHTML = "No";
             $cancelButton.onclick = () => {
                 this.dialogContainer.classList.add("hidden");
                 this.dialogContainer.innerHTML = "";
                 resolve(false);
-            }
+            };
             $newActions.appendChild($okButton);
             this.mainInnerDialog.appendChild($newContent);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);
-        })
+        });
     }
 
     /**
@@ -317,25 +400,21 @@ class TVMenuItem {
         ) {
             throw new Error("TVMenuItem: type is invalid.");
         } else if (
-            (options.type === "enum" &&
-                (
-                    !options.possibleValues || 
-                    options.possibleValues.length === 0 || 
-                    !options.default
-                )
-            )
+            options.type === "enum" &&
+            (!options.possibleValues ||
+                options.possibleValues.length === 0 ||
+                !options.default)
         ) {
             throw new Error("TVMenuItem: possibleValues or default is invalid.");
-        } else if (
-            options.type === "number" && (!min || !max)
-        ) {
+        } else if (options.type === "number" && (!min || !max)) {
             console.warn(
-              "TVMenuItem: min or max is missing, input type will be number instead of range"
+                "TVMenuItem: min or max is missing, input type will be number instead of range"
             );
         } else if (
-            options.type === "folder" && (!options.children || options.children.length === 0)
+            options.type === "folder" &&
+            (!options.children || options.children.length === 0)
         ) {
-            throw new Error("TVMenuItem: children is null or empty.")
+            throw new Error("TVMenuItem: children is null or empty.");
         }
         this.type = options.type;
         this.icon = options.icon;
