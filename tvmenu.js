@@ -18,8 +18,8 @@ class TVMenu {
         
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        document.appendChild(this.menuContainer);
-        document.appendChild(this.dialogContainer);
+        document.body.appendChild(this.menuContainer);
+        document.body.appendChild(this.dialogContainer);
     }
 
     /**
