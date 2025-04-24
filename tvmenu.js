@@ -19,7 +19,7 @@ class TVMenu {
         
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        this.#createItemTree(this.items, mainInnerSection)
+        this.#createItemTree(this.items, this.mainInnerSection)
     }
 
     /**
@@ -96,7 +96,7 @@ class TVMenu {
                 $newItem.parentElement.appendChild(_);
                 $newItem.onclick = (evt) => {
                     $newItem.parentElement.classList.remove("active");
-                    _.classList.add("active")
+                    _.classList.add("active");
                 }
                 this.#createItemTree(item.children, _, true, item.text, $newItem.parentElement);
             }
