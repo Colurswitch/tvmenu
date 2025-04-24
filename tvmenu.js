@@ -12,6 +12,7 @@ class TVMenu {
 
         this.menuContainer = document.createElement("tvm-panel");
         this.mainInnerSection = document.createElement("tvm-section");
+        this.mainInnerSection.classList.add("active");
         this.dialogContainer = document.createElement("tvm-panel");
         this.dialogContainer.classList.add("hidden");
         this.mainInnerDialog = document.createElement("tvm-dialog");
@@ -55,7 +56,8 @@ class TVMenu {
         }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
-            if (idx == 0) $newItem.classList.add("active");
+            if (idx == 0) $newItem.classList.add("selected");
+            if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
             else {
                 if (item.type == "checkbox") $newItem.dataset.tvm_value = false;
@@ -229,7 +231,7 @@ class TVMenu {
     ) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.dialogContainer.innerHTML = "";
+            this.m
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             var $newActions;
@@ -292,6 +294,7 @@ class TVMenu {
             }
             this.mainInnerDialog.appendChild($newContent);
             this.mainInnerDialog.appendChild($newActions);
+            this.dialogContainer.replaceChildren("");
             this.dialogContainer.appendChild(this.mainInnerDialog);
         });
     }
