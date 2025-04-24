@@ -310,8 +310,12 @@ class TVMenuItem {
             throw new Error("TVMenuItem: type is invalid.");
         } else if (
             (options.type === "enum" &&
-                (!options.possibleValues || options.possibleValues.length === 0 || !options.default))
-            
+                (
+                    !options.possibleValues || 
+                    options.possibleValues.length === 0 || 
+                    !options.default
+                )
+            )
         ) {
             throw new Error("TVMenuItem: possibleValues or default is invalid.");
         } else if (
