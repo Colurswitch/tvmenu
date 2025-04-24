@@ -16,10 +16,10 @@ class TVMenu {
         this.dialogContainer.classList.add("hidden")
         this.mainInnerDialog = document.createElement("tvm-dialog");
         
+        
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        document.body.appendChild(this.menuContainer);
-        document.body.appendChild(this.dialogContainer);
+        this.#createItemTree(this.items, mainInnerSection)
     }
 
     /**
@@ -93,7 +93,7 @@ class TVMenu {
             };
             else if (item.type == "folder") {
                 const _ = document.createElement("tvm-section");
-                $newItem.parentElement.insertAdjacentElement("afterend", _);
+                $newItem.parentElement.appendChild(_);
                 $newItem.onclick = (evt) => {
                     $newItem.parentElement.classList.remove("active");
                     _.classList.add("active")
@@ -105,7 +105,7 @@ class TVMenu {
     }
 
     /**
-     * Displays an alert dialog with the provided message.
+     * Displays an alert dialog with the provided message. Not to be confused with Window.alert().
      *
      * @param {string} message - The message to display in the alert dialog.
      * @returns {Promise<void>} A promise that resolves when the dialog is dismissed.
@@ -211,6 +211,12 @@ class TVMenu {
         })
     }
 
+    /**
+     * Displays a confirmation dialog with the provided message. Not to be confused with Window.confirm().
+     *
+     * @param {string} message - The message to display in the confirm dialog.
+     * @returns {Promise<boolean>} A promise that resolves with true if the user clicks the "Yes" button or false if the user clicks the "No" button.
+     */
     confirm(message) {
         return new Promise((resolve) => {
             const $newContent = document.createElement("tvm-dialog-content");

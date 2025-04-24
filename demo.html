@@ -75,7 +75,7 @@
                 new TVMenuItem({
                     text: "Basic button",
                     type: "button",
-                    onSelect() { alert("button clicked") }
+                    onSelect: () => menu.alert("Hello world"),
                 }),
                 new TVMenuItem({
                     text: "Separator",
@@ -84,7 +84,10 @@
                 new TVMenuItem({
                     text: "Checkbox",
                     type: "checkbox",
-                    onChange(newValue) { console.log("New value: ", newValue) }
+                    onChange(newValue) { 
+                        console.log("New value: ", newValue)
+                        menu.alert("New value is" + newValue)
+                    }
                 }),
                 new TVMenuItem({
                     text: "Enum",
