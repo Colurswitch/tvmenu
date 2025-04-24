@@ -13,10 +13,13 @@ class TVMenu {
         this.menuContainer = document.createElement("tvm-panel");
         this.mainInnerSection = document.createElement("tvm-section");
         this.dialogContainer = document.createElement("tvm-panel");
+        this.dialogContainer.classList.add("hidden")
         this.mainInnerDialog = document.createElement("tvm-dialog");
-
         
         this.menuContainer.appendChild(this.mainInnerSection);
+        this.dialogContainer.appendChild(this.mainInnerDialog);
+        document.appendChild(this.menuContainer);
+        document.appendChild(this.dialogContainer);
     }
 
     /**
@@ -24,9 +27,31 @@ class TVMenu {
      *
      * @param {TVMenuItem[]} items - The array of items to create in the container.
      * @param {HTMLElement} container - The container element to add the items to.
+     * @param {boolean} [isSubMenu] - Determins wether this menu is a child of another menu.
+     * @param {HTMLElement} [subMenuHeader] - The header to display for the sub menu.
+     * @param {HTMLElement} [parentMenu] - The parent menu of this menu.
      * @private
      */
-    #createItemTree(items, container) {
+    #createItemTree(items, container, isSubMenu, subMenuHeader, parentMenu) {
+        if (isSubMenu) {
+            const $newHeader = document.createElement("h1");
+            $newHeader.innerHTML = subMenuHeader;
+            container.appendChild($newHeader);
+            const $backItem = document.createElement("tvm-item");
+            $backItem.innerHTML = `
+                <span class="icon">
+                    <i class="material-icons">arrow_back</i>
+                </span>
+                <div class="right">
+                    <h3>Back</h3>
+                </div>
+            `;
+            $backItem.onclick = () => {
+                container.classList.remove("active");
+                parentMenu.classList.add("active");
+            };
+            container.appendChild($backItem);
+        }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
             $newItem.innerHTML = `
@@ -46,14 +71,34 @@ class TVMenu {
                 else if (item.type == "input") $newItem.dataset.tvm_value = "";
             }
             if (item.onSelect) $newItem.onclick = (evt) => {
-                if (item.type == "input" && item.onChange) this.prompt(item.text, item.default, item.isPassword ? "password" : "text", item.onChange, item.min, item.max).then(value => item.value = value);
-                if (item.type == "checkbox")
+                if (item.type == "input" && item.onChange) this.prompt(
+                    item.text, 
+                    item.default, 
+                    item.isPassword ? "password" : "text", 
+                    item.onChange, 
+                    item.min, 
+                    item.max
+                ).then(value => item.value = value);
+                if (item.type == "checkbox") $newItem.dataset.tvm_value = !item.default;
+                else if (item.type == "number") this.prompt(
+                    item.text,
+                    item.default,
+                    min && max ? "range" : "number",
+                    item.onChange,
+                    item.min,
+                    item.max
+                ).then((value) => (item.value = value));
+
                 item.onSelect(evt);
             };
             else if (item.type == "folder") {
                 const _ = document.createElement("tvm-section");
                 $newItem.parentElement.insertAdjacentElement("afterend", _);
-                this.#createItemTree(item.children, _);
+                $newItem.onclick = (evt) => {
+                    $newItem.parentElement.classList.remove("active");
+                    _.classList.add("active")
+                }
+                this.#createItemTree(item.children, _, true, item.text, $newItem.parentElement);
             }
             container.appendChild($newItem);
         });
@@ -67,6 +112,8 @@ class TVMenu {
      */
     alert(message) {
         return new Promise((resolve) => {
+            this.dialogContainer.classList.remove("hidden");
+            this.dialogContainer.innerHTML = "";
             this.mainInnerDialog.innerHTML = `<tvm-dialog-content>${message}</tvm-dialog-content>`;
             const $newActions = document.createElement("tvm-dialog-actions");
             const $acceptButton = document.createElement("button");
@@ -83,43 +130,81 @@ class TVMenu {
     }
 
     /**
-     * Displays a prompt dialog with the provided message and options.
+     * Displays a prompt dialog with the provided message and options. Not to be confused with Window.prompt().
      *
      * @param {string} message - The message to display in the prompt dialog.
      * @param {string|number|boolean} [defaultValue=""] - The default value to display in the input field.
      * @param {string} [type="text"] - The type of input to use in the prompt dialog.
      * @param {function(string)} [onchange] - A function to call when the value of the input changes.
+     * @param {{text: string, value: string}[]} [values] - The possible values for the enum type.
      * @param {number} [min] - The minimum value of the input field.
      * @param {number} [max] - The maximum value of the input field.
      * @returns {Promise<string>} A promise that resolves with the value of the input when the dialog is dismissed.
      */
-    prompt(message, defaultValue = "", type = "text", onchange, min, max) {
+    prompt(message, defaultValue = "", type = "text", onchange, values, min, max) {
         return new Promise((resolve) => {
+            this.dialogContainer.classList.remove("hidden");
+            this.dialogContainer.innerHTML = "";
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
-            const $newInput = document.createElement("input");
-            $newInput.type = type;
-            $newInput.value = defaultValue;
-            if (onchange) $newInput.onchange = () => onchange($newInput.value);
-            if (min) $newInput.min = min;
-            if (max) $newInput.max = max;
-            $newContent.appendChild($newInput);
-            const $newActions = document.createElement("tvm-dialog-actions");
-            const $okButton = document.createElement("button");
-            $okButton.innerHTML = "OK";
-            $okButton.onclick = () => {
-                this.dialogContainer.classList.add("hidden");
-                this.dialogContainer.innerHTML = "";
-                resolve($newInput.value);
+            var $newActions;
+            var $okButton;
+            var $cancelButton;
+            if (type === "enum") {
+                const $newSelect = document.createElement("select");
+                values.forEach((value) => {
+                    const $newOption = document.createElement("option");
+                    $newOption.innerHTML = value.text;
+                    $newOption.value = value.value;
+                    $newSelect.appendChild($newOption);
+                });
+                $newSelect.value = defaultValue;
+                $newSelect.onchange = () => onchange($newSelect.value);
+                $newSelect.value = defaultValue;
+                $newActions = document.createElement("tvm-dialog-actions");
+                $okButton = document.createElement("button");
+                $okButton.innerHTML = "OK";
+                $okButton.onclick = () => {
+                    this.dialogContainer.classList.add("hidden");
+                    this.dialogContainer.innerHTML = "";
+                    resolve($newSelect.value);
+                }
+                $cancelButton = document.createElement("button");
+                $cancelButton.innerHTML = "Cancel";
+                $cancelButton.onclick = () => {
+                    this.dialogContainer.classList.add("hidden");
+                    this.dialogContainer.innerHTML = "";
+                    resolve(defaultValue);
+                }
+                $newActions.appendChild($okButton);
+                $newActions.appendChild($cancelButton);
+                $newContent.appendChild($newSelect);
+            } else {
+                const $newInput = document.createElement("input");
+                $newInput.type = type;
+                $newInput.value = defaultValue;
+                if (onchange) $newInput.onchange = () => onchange($newInput.value);
+                if (min) $newInput.min = min;
+                if (max) $newInput.max = max;
+                $newContent.appendChild($newInput);
+                $newActions = document.createElement("tvm-dialog-actions");
+                $okButton = document.createElement("button");
+                $okButton.innerHTML = "OK";
+                $okButton.onclick = () => {
+                    this.dialogContainer.classList.add("hidden");
+                    this.dialogContainer.innerHTML = "";
+                    resolve($newInput.value);
+                }
+                $cancelButton = document.createElement("button");
+                $cancelButton.innerHTML = "Cancel";
+                $cancelButton.onclick = () => {
+                    this.dialogContainer.classList.add("hidden");
+                    this.dialogContainer.innerHTML = "";
+                    resolve(defaultValue);
+                }
+                $newActions.appendChild($okButton);
+                $newActions.appendChild($cancelButton);
             }
-            const $cancelButton = document.createElement("button");
-            $cancelButton.innerHTML = "Cancel";
-            $cancelButton.onclick = () => {
-                this.dialogContainer.classList.add("hidden");
-                this.dialogContainer.innerHTML = "";
-                resolve(defaultValue);
-            }
-            $newActions.appendChild($okButton);
             this.mainInnerDialog.appendChild($newContent);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);

@@ -138,6 +138,7 @@ tvm-dialog tvm-dialog-actions button {
     transform: scale(1);
     text-shadow: none;
     transition: all .125s ease-out;
+    color: white;
 }
 
 tvm-dialog tvm-dialog-actions button:hover,

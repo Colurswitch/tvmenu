@@ -6,6 +6,7 @@
     <title>TVMenu Demo</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="tvmenu.css">
+    <script src="tvmenu.js"></script>
     <style>
         @import url('https://fonts.cdnfonts.com/css/google-sans');
         * {
@@ -83,6 +84,16 @@
                 new TVMenuItem({
                     text: "Checkbox",
                     type: "checkbox",
+                    onChange(newValue) { console.log("New value: ", newValue) }
+                }),
+                new TVMenuItem({
+                    text: "Enum",
+                    type: "enum",
+                    possibleValues: [
+                        {value: 1, text: "First"},
+                        {value: 2, text: "Second"}
+                    ],
+                    default: 1,
                     onChange(newValue) { console.log("New value: ", newValue) }
                 })
             ]
