@@ -105,6 +105,13 @@ tvm-panel tvm-item:active {
     transform: scale(.9);
 }
 
+tvm-panel tvm-item.is-separator {
+    background: transparent;
+    transform: scale(1);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
 tvm-panel tvm-dialog {
     width: 100%;
     height: 50vh;
@@ -122,4 +129,24 @@ tvm-panel tvm-dialog {
 tvm-panel:has(tvm-dialog) {
     align-items: stretch;
     justify-content: center;
+}
+
+tvm-dialog tvm-dialog-actions button {
+    border: none;
+    background: none;
+    font-size: medium;
+    transform: scale(1);
+    text-shadow: none;
+    transition: all .125s ease-out;
+}
+
+tvm-dialog tvm-dialog-actions button:hover,
+tvm-dialog tvm-dialog-actions button:focus,
+tvm-dialog tvm-dialog-actions button.active {
+    transform: scale(1.1);
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+tvm-dialog tvm-dialog-actions button:focus {
+    outline: 3px solid orange;
 }

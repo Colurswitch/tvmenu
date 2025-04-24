@@ -16,7 +16,7 @@
 </head>
 <body>
     <tvm-panel>
-        <tvm-section class="">
+        <tvm-section class="active">
             <tvm-item>
                 <span class="icon">
                     <i class="material-icons">home</i>
@@ -34,35 +34,6 @@
                     <h3>Settings</h3>
                     <h3>Value</h3>
                 </div>
-                <tvm-section class="active">
-                    <tvm-item>
-                        <span class="icon">
-                            <i class="material-icons">home</i>
-                        </span>
-                        <div class="right">
-                            <h3>Home</h3>
-                            <h3>Value</h3>
-                        </div>
-                    </tvm-item>
-                    <tvm-item>
-                        <span class="icon">
-                            <i class="material-icons">settings</i>
-                        </span>
-                        <div class="right">
-                            <h3>Settings</h3>
-                            <h3>Value</h3>
-                        </div>
-                    </tvm-item>
-                    <tvm-item>
-                        <span class="icon">
-                            <i class="material-icons">settings</i>
-                        </span>
-                        <div class="right">
-                            <h3>Settings</h3>
-                            <h3>Value</h3>
-                        </div>
-                    </tvm-item>
-                </tvm-section>
             </tvm-item>
             <tvm-item>
                 <span class="icon">
@@ -82,8 +53,8 @@
                 <h3>Value</h3>
             </tvm-dialog-content>
             <tvm-dialog-actions>
-                <button class="btn btn-primary">Ok</button>
-                <button class="btn btn-default">Cancel</button>
+                <button>Ok</button>
+                <button>Cancel</button>
             </tvm-dialog-actions>
         </tvm-dialog>
     </tvm-panel>
@@ -97,7 +68,25 @@
                 ]}
             ]
         })*/
-        
+        const menu = new TVMenu({
+            header: "Home",
+            items: [
+                new TVMenuItem({
+                    text: "Basic button",
+                    type: "button",
+                    onSelect() { alert("button clicked") }
+                }),
+                new TVMenuItem({
+                    text: "Separator",
+                    type: "separator"
+                }),
+                new TVMenuItem({
+                    text: "Checkbox",
+                    type: "checkbox",
+                    onChange(newValue) { console.log("New value: ", newValue) }
+                })
+            ]
+        })
     </script>
 </body>
 </html>
