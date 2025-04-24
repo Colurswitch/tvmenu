@@ -19,7 +19,9 @@ class TVMenu {
         
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        this.#createItemTree(this.items, this.mainInnerSection)
+        this.#createItemTree(this.items, this.mainInnerSection);
+        document.body.appendChild(this.menuContainer);
+        document.body.appendChild(this.dialogContainer);
     }
 
     /**
