@@ -166,7 +166,7 @@ class TVMenu {
             };
             if (item.type == "folder") {
                 const _ = document.createElement("tvm-section");
-                $newItem.parentElement.appendChild(_);
+                this.menuContainer.appendChild(_);
                 $newItem.onclick = (evt) => {
                     $newItem.parentElement.classList.remove("active");
                     _.classList.add("active");
