@@ -61,6 +61,18 @@
                     ],
                     default: 1,
                     onChange(newValue) { console.log("New value: ", newValue) }
+                }),
+                new TVMenuItem({
+                    text: "Folder",
+                    type: "folder",
+                    children: [
+                        new TVMenuItem({
+                            text: "Folder item",
+                            type: "button",
+                            onSelect: () => menu.alert("Hello world"),
+                            icon: `<i class="material-icons">addchart</i>`
+                        })
+                    ]
                 })
             ]
         })

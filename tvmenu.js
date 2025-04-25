@@ -138,7 +138,7 @@ class TVMenu {
                     this.prompt(
                         item.text,
                         item.default | 0,
-                        "select",
+                        "enum",
                         item.onChange,
                         item.possibleValues
                     ).then((value) => {
