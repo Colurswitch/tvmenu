@@ -113,7 +113,7 @@ class TVMenu {
                         `;
                     });
                 if (item.type == "checkbox")
-                    $newItem.dataset.tvm_value = !Boolean($newItem.dataset.tvm_value);
+                    $newItem.dataset.tvm_value = newItem.dataset.tvm_value === "true" ? false : true;
                 else if (item.type == "number")
                     this.prompt(
                         item.text,
@@ -137,7 +137,7 @@ class TVMenu {
                 else if (item.type == "enum")
                     this.prompt(
                         item.text,
-                        item.default | 0,
+                        $newItem.dataset.tvm_value,
                         "enum",
                         item.onChange,
                         item.possibleValues
@@ -159,7 +159,7 @@ class TVMenu {
                     </span>
                     <div class="right">
                         <h3>${item.text}</h3>
-                        <h3>${$newItem.dataset.tvm_value}</h3>
+                        <h3>${item.type == "button" ? "" : $newItem.dataset.tvm_value}</h3>
                     </div>
                 `;
                 if (item.onSelect) item.onSelect(evt);
@@ -176,7 +176,7 @@ class TVMenu {
                     _,
                     true,
                     item.text,
-                    $newItem.parentElement
+                    this.menuContainer
                 );
             }
             container.appendChild($newItem);
