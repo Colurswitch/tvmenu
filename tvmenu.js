@@ -29,7 +29,7 @@ class TVMenu {
      *
      * @param {TVMenuItem[]} items - The array of items to create in the container.
      * @param {HTMLElement} container - The container element to add the items to.
-     * @param {boolean} [isSubMenu] - Determins wether this menu is a child of another menu.
+     * @param {boolean} [isSubMenu] - Determines wether this menu is a child of another menu.
      * @param {HTMLElement} [subMenuHeader] - The header to display for the sub menu.
      * @param {HTMLElement} [parentMenu] - The parent menu of this menu.
      * @private
@@ -458,21 +458,12 @@ class TVMenu {
     }
 
     /**
-     * Selects the currently selected item as if the user had clicked on it
-     */
-    select() {
-        //this.mainInnerSection.querySelector("tvm-item.selected").click();
-    }
-
-    /**
      * Removes the menu from the DOM. This is useful when the menu is no
      * longer needed and you want to free up resources.
      */
     destroy() {
         this.menuContainer.remove();
-        this.mainInnerSection.remove();
         this.dialogContainer.remove();
-        this.mainInnerDialog.remove();
     }
 }
 
@@ -514,7 +505,7 @@ class TVMenuItem {
                 !options.default)
         ) {
             throw new Error("TVMenuItem: possibleValues or default is invalid.");
-        } else if (options.type === "number" && (!min || !max)) {
+        } else if (options.type === "number" && (!options.min || !options.max)) {
             console.warn(
                 "TVMenuItem: min or max is missing, input type will be number instead of range"
             );

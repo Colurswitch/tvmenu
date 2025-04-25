@@ -48,10 +48,6 @@ Control the menu:
 menu.show() // Show the menu
 menu.hide() // Hide the menu
 menu.toggle() // Toggle the menu
-
-menu.moveSelection("up" | "down") // Move the selection up or down
-menu.select() // Select the current item
-menu.back() // Go back to the previous item or menu
 ```
 
 Display messages:
