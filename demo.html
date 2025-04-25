@@ -71,11 +71,35 @@
                             type: "button",
                             onSelect: () => menu.alert("Hello world"),
                             icon: `<i class="material-icons">addchart</i>`
+                        }),
+                        new TVMenuItem({
+                            text: "Number",
+                            type: "number",
+                            default: 1,
+                            onChange(newValue) { console.log("New value: ", newValue) }
+                        }),
+                        new TVMenuItem({
+                            text: "Number with range",
+                            type: "number",
+                            default: 1,
+                            min: 1,
+                            max: 10,
+                            onChange(newValue) { console.log("New value: ", newValue) }
+                        }),
+                        new TVMenuItem({
+                            text: "Confirm dialog",
+                            type: "button",
+                            onSelect: () => menu.confirm("Are you sure?").then(res => {
+                                console.log("Dialog result: ", res);
+                                menu.alert("Dialog result: " + res);
+                            })
                         })
                     ]
                 })
             ]
-        })
+        });
+
+        menu.subscribeToKeyboard(); // Sub to key events
     </script>
 </body>
 </html>

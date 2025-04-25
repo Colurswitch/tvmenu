@@ -19,7 +19,7 @@ class TVMenu {
 
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        this.#createItemTree(this.items, this.mainInnerSection);
+        this.#createItemTree(this.items, this.header, this.mainInnerSection);
         document.body.appendChild(this.menuContainer);
         document.body.appendChild(this.dialogContainer);
     }
@@ -34,7 +34,7 @@ class TVMenu {
      * @param {HTMLElement} [parentMenu] - The parent menu of this menu.
      * @private
      */
-    #createItemTree(items, container, isSubMenu, subMenuHeader, parentMenu) {
+    #createItemTree(items, header, container, isSubMenu, subMenuHeader, parentMenu) {
         if (isSubMenu) {
             const $newHeader = document.createElement("h1");
             $newHeader.innerHTML = subMenuHeader;
@@ -54,16 +54,23 @@ class TVMenu {
             };
             container.appendChild($backItem);
         }
+        if (header) {
+            const $newHeader = document.createElement("h1");
+            $newHeader.innerHTML = header;
+            container.appendChild($newHeader);
+        }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
             if (idx == 0) $newItem.classList.add("selected");
             if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
             else {
-                if (item.type == "checkbox") $newItem.dataset.tvm_value = false;
+                if (item.type == "checkbox") 
+                    $newItem.dataset.tvm_value = false;
                 else if (item.type == "number")
                     $newItem.dataset.tvm_value = item.min ? item.min : 0;
-                else if (item.type == "input") $newItem.dataset.tvm_value = "";
+                else if (item.type == "input") 
+                    $newItem.dataset.tvm_value = "";
             }
             $newItem.innerHTML = `
                 <span class="icon">
@@ -113,7 +120,7 @@ class TVMenu {
                         `;
                     });
                 if (item.type == "checkbox")
-                    $newItem.dataset.tvm_value = newItem.dataset.tvm_value === "true" ? false : true;
+                    $newItem.dataset.tvm_value = $newItem.dataset.tvm_value === "true" ? false : true;
                 else if (item.type == "number")
                     this.prompt(
                         item.text,
@@ -176,11 +183,107 @@ class TVMenu {
                     _,
                     true,
                     item.text,
-                    this.menuContainer
+                    container
                 );
             }
             container.appendChild($newItem);
         });
+    }
+
+    /**
+     * Handles key events for the menu. This is a no-op if the menu is not visible.
+     *
+     * @param {KeyboardEvent} evt - The event to handle.
+     */
+    #handleKeyEvent(evt) {
+        /** @type {HTMLElement} - all the items in the menu that are not separators */
+        var $selectedItem;
+        var $selectedItemIndex;
+
+        
+        if (this.menuContainer.classList.contains("hidden")) return;
+        if (this.dialogContainer.classList.contains("hidden")) {
+            this.menuContainer.querySelectorAll("tvm-item:not(.is-separator)").forEach(el => {
+                if (el.classList.contains("selected")) {
+                    $selectedItem = el;
+                    $selectedItemIndex = [...this.menuContainer.querySelectorAll("tvm-item:not(.is-separator)")].indexOf(el);
+                }
+            });
+            evt.preventDefault();
+            switch (evt.key) {
+                case "ArrowUp":
+                    if ($selectedItem.previousElementSibling) {
+                        $selectedItem = $selectedItem.previousElementSibling
+                        $selectedItem.previousElementSibling.classList.add("selected");
+                        $selectedItem.classList.remove("selected");
+                        while ($selectedItem.classList.contains("is-separator")) {
+                            $selectedItem = $selectedItem.previousElementSibling;
+                            $selectedItem.previousElementSibling.classList.add("selected");
+                            $selectedItem.classList.remove("selected");
+                        }
+                    }
+                    break;
+                case "ArrowDown":
+                    if ($selectedItem.nextElementSibling) {
+                        $selectedItem = $selectedItem.nextElementSibling;
+                        $selectedItem.nextElementSibling.classList.add("selected");
+                        $selectedItem.classList.remove("selected");
+                        while ($selectedItem.classList.contains("is-separator")) {
+                            $selectedItem = $selectedItem.nextElementSibling;
+                            $selectedItem.nextElementSibling.classList.add("selected");
+                            $selectedItem.classList.remove("selected");
+                        }
+                    }
+                    break;
+                case "Enter":
+                    $selectedItem.click();
+                    break;
+                case "Backtick":
+                    this.menuContainer.classList.toggle("hidden");
+                    break;
+            }
+        } else {
+            // The dialog is visible, so handle key events for the dialog's actions.
+            // Only preventDefault() if there is no input field in focus.
+            if (!evt.target.closest("input")) evt.preventDefault();
+            this.mainInnerDialog.querySelectorAll("tvm-dialog-actions > button").forEach(el => {
+                if (el.classList.contains("active")) {
+                    $selectedItem = el;
+                    $selectedItemIndex = [...this.mainInnerDialog.querySelectorAll("tvm-dialog-actions > button")].indexOf(el);
+                }
+            });
+            switch (evt.key) {
+                case "ArrowLeft":
+                    if ($selectedItem.previousElementSibling) {
+                        $selectedItem = $selectedItem.previousElementSibling;
+                        $selectedItem.previousElementSibling.classList.add("active");
+                        $selectedItem.classList.remove("active");
+                    }
+                    break;
+                case "ArrowRight":
+                    if ($selectedItem.nextElementSibling) {
+                        $selectedItem = $selectedItem.nextElementSibling;
+                        $selectedItem.nextElementSibling.classList.add("active");
+                        $selectedItem.classList.remove("active");
+                    }
+                    break;
+                case "Enter":
+                    $selectedItem.click();
+            }
+        }
+    }
+
+
+    /**
+     * Subscribes to keyboard events and handles them by invoking the #handleKeyEvent method.
+     * This method adds an event listener to the document that listens for keypress events.
+     */
+    subscribeToKeyboard() {
+        document.addEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
+    }
+
+    unsubscribeFromKeyboard() {
+        document.removeEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
     }
 
     /**
@@ -231,7 +334,7 @@ class TVMenu {
     ) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.m
+            this.dialogContainer.innerHTML = "";
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             var $newActions;
@@ -307,6 +410,8 @@ class TVMenu {
      */
     confirm(message) {
         return new Promise((resolve) => {
+            this.dialogContainer.classList.remove("hidden");
+            this.dialogContainer.innerHTML = "";
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             const $newActions = document.createElement("tvm-dialog-actions");

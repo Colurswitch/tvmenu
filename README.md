@@ -31,10 +31,16 @@ const menu = new TVMenu({
             [children: TVMenuItem[] | null], // Array of child items. Required if type is "folder".
             [allowAlpha: boolean], // Allow the user to select the alpha value of the color type. Optional but won't be used if type is "separator".
             [isPassword: boolean], // Whether the item is a password field. Use only if type is "input".
-            [default: string | null] // Default value for the item. Optional but won't be used if type is "separator", "button", or "folder". Required and must be the number if type is "enum". Must be a valid CSS color string if type is "color". Can be just a string if type is "input". Must evaluate to a boolean if type is checkbox.
+            [default: string | number | null] // Default value for the item. Optional but won't be used if type is "separator", "button", or "folder". Required and must be the number if type is "enum". Must be a valid CSS color string if type is "color". Can be just a string if type is "input". Must evaluate to a boolean if type is checkbox.
         })
     ]
 })
+```
+
+Bind the menu:
+```javascript
+menu.subscribeToKeyboard() // Subscribe to keyboard events
+menu.unsubscribeFromKeyboard() // Unsubscribe from keyboard events
 ```
 
 Control the menu:
