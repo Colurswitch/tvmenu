@@ -161,6 +161,10 @@ class TVMenu {
                             </div>
                         `;
                     });
+                else if (item.type == "link") {
+                    if (item.openInNewTab) window.open(item.link, "_blank");
+                    else window.open(item.link, "_self");
+                }
                 $newItem.innerHTML = `
                     <span class="icon">
                         ${item.icon || ``}
@@ -203,7 +207,7 @@ class TVMenu {
         var $selectedItemIndex;
 
         
-        if (this.menuContainer.classList.contains("hidden")) return;
+        if (this.menuContainer.classList.contains("hidden") || document.activeElement.tagName === "INPUT") return;
         if (this.dialogContainer.classList.contains("hidden")) {
             this.menuContainer.querySelectorAll("tvm-item:not(.is-separator)").forEach(el => {
                 if (el.classList.contains("selected")) {
@@ -223,6 +227,7 @@ class TVMenu {
                             $selectedItem.previousElementSibling.classList.add("selected");
                             $selectedItem.classList.remove("selected");
                         }
+                        $selectedItem.scrollIntoView({ block: "center" })
                     }
                     break;
                 case "ArrowDown":
@@ -235,6 +240,7 @@ class TVMenu {
                             $selectedItem.nextElementSibling.classList.add("selected");
                             $selectedItem.classList.remove("selected");
                         }
+                        $selectedItem.scrollIntoView({ block: "center" });
                     }
                     break;
                 case "Enter":
@@ -280,7 +286,7 @@ class TVMenu {
      * This method adds an event listener to the document that listens for keypress events.
      */
     subscribeToKeyboard() {
-        document.addEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
+        window.addEventListener("keydown", (evt) => this.#handleKeyEvent(evt))
     }
 
     /**
@@ -288,7 +294,7 @@ class TVMenu {
      * This prevents the #handleKeyEvent method from being invoked on keypress.
      */
     unsubscribeFromKeyboard() {
-        document.removeEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
+        window.removeEventListener("keydown", (evt) => this.#handleKeyEvent(evt))
     }
 
     /**
@@ -491,6 +497,8 @@ class TVMenuItem {
      * The default value of the item. Optional, but won't be used if type is button or folder.
      * This property must evaluate to a CSS color if type is color. Can be a string if type is input.
      * Must evaluate to a bool if type is checkbox.
+     * @param {string} [options.href] - The URL to open when the item is clicked. Only used if type is link.
+     * @param {boolean} [options.openInNewTab] - Whether or not to open the URL in a new tab. Only used if type is link.
      */
     constructor(options) {
         this.text = options.text;
@@ -501,6 +509,7 @@ class TVMenuItem {
             options.type !== "number" &&
             options.type !== "folder" &&
             options.type !== "input" &&
+            options.type !== "link" &&
             options.type !== "separator"
         ) {
             throw new Error("TVMenuItem: type is invalid.");
@@ -531,6 +540,8 @@ class TVMenuItem {
         this.min = options.min;
         this.max = options.max;
         this.default = options.default;
+        this.href = options.href;
+        this.openInNewTab = options.openInNewTab;
         this.value = this.default;
 
         this.domElement = document.createElement("tvm-item");

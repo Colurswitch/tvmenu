@@ -24,19 +24,29 @@ const menu = new TVMenu({
         new TVMenuItem({
             [text: string], // Text to display in the menu item. Required unless type is "separator".
             [icon: string | HTMLElement | null], // Valid HTML to display as an icon. Required unless type is "separator".
-            type: "button" | "checkbox" | "enum" | "color" | "folder" | "input" | "separator", // Type of menu item.
+            type: "button" | "checkbox" | "enum" | "color" | "folder" | "input" | "separator" | "link", 
+            // Type of menu item.
             [onSelect: () => void | null], // Callback function to execute when the item has been clicked or selected. Optional but won't be used if type is "separator".
-            [possibleValues: {text: string, value: string}[] | null], // Array of values for the enum type. Required if type is "enum".
-            [onChange: (string) => void | null], // Callback function to execute when the value of the item has changed. Optional but won't be used if type is "separator".
+            [possibleValues: {text: string, value: string}[] | null], 
+            // Array of values for the enum type. Required if type is "enum".
+            [onChange: (string) => void | null], 
+            // Callback function to execute when the value of the item has changed. Optional but won't be used if type is "separator".
             [children: TVMenuItem[] | null], // Array of child items. Required if type is "folder".
-            [allowAlpha: boolean], // Allow the user to select the alpha value of the color type. Optional but won't be used if type is "separator".
-            [isPassword: boolean], // Whether the item is a password field. Use only if type is "input".
-            [default: string | number | null] // Default value for the item. Optional but won't be used if type is "separator", "button", or "folder". Required and must be the number if type is "enum". Must be a valid CSS color string if type is "color". Can be just a string if type is "input". Must evaluate to a boolean if type is checkbox.
+            [allowAlpha: boolean], 
+            // Allow the user to select the alpha value of the color type. Optional but won't be used if type is "separator".
+            [isPassword: boolean], 
+            // Whether the item is a password field. Use only if type is "input".
+            [default: string | number | null],
+            // Default value for the item. Optional but won't be used if type is "separator", "button", or "folder". Required and must be the number if type is "enum". Must be a valid CSS color string if type is "color". Can be just a string if type is "input". Must evaluate to a boolean if type is checkbox.
+            [href: string | null],
+            // URL to open when the item is clicked. Only used if type is "link".
+            [openInNewTab: boolean | null], 
+            // Whether to open the URL in a new tab. Only used if type is link.
         })
     ]
 })
 ```
-
+### Methods
 Bind the menu:
 ```javascript
 menu.subscribeToKeyboard() // Subscribe to keyboard events
