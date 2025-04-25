@@ -93,6 +93,22 @@
                                 console.log("Dialog result: ", res);
                                 menu.alert("Dialog result: " + res);
                             })
+                        }),
+                        new TVMenuItem({
+                            text: "Other actions",
+                            type: "separator"
+                        }),
+                        new TVMenuItem({
+                            text: "Sub-folder",
+                            type: "folder",
+                            children: [
+                                new TVMenuItem({
+                                    text: "Sub-folder item",
+                                    type: "button",
+                                    onSelect: () => menu.alert("Hello world"),
+                                    icon: `<i class="material-icons">addchart</i>`
+                                })
+                            ]
                         })
                     ]
                 })

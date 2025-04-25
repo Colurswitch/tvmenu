@@ -126,7 +126,7 @@ class TVMenu {
                     this.prompt(
                         item.text,
                         item.default,
-                        min && max ? "range" : "number",
+                        item.min && item.max ? "range" : "number",
                         item.onChange,
                         item.min,
                         item.max
@@ -275,7 +275,6 @@ class TVMenu {
         }
     }
 
-
     /**
      * Subscribes to keyboard events and handles them by invoking the #handleKeyEvent method.
      * This method adds an event listener to the document that listens for keypress events.
@@ -284,6 +283,10 @@ class TVMenu {
         document.addEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
     }
 
+    /**
+     * Unsubscribes from keyboard events by removing the event listener for keypress events.
+     * This prevents the #handleKeyEvent method from being invoked on keypress.
+     */
     unsubscribeFromKeyboard() {
         document.removeEventListener("keypress", (evt) => this.#handleKeyEvent(evt))
     }
@@ -336,7 +339,7 @@ class TVMenu {
     ) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.dialogContainer.innerHTML = "";
+            this.dialogContainer.innerHTML = "<div></div>";
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             var $newActions;
@@ -413,7 +416,7 @@ class TVMenu {
     confirm(message) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.dialogContainer.innerHTML = "";
+            this.dialogContainer.innerHTML = "<div></div>";
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             const $newActions = document.createElement("tvm-dialog-actions");
@@ -432,6 +435,7 @@ class TVMenu {
                 resolve(false);
             };
             $newActions.appendChild($okButton);
+            $newActions.appendChild($cancelButton);
             this.mainInnerDialog.appendChild($newContent);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);
