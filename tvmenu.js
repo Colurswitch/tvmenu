@@ -28,6 +28,7 @@ class TVMenu {
      * Creates a tree of items in the given container.
      *
      * @param {TVMenuItem[]} items - The array of items to create in the container.
+     * @param {string} header - The header text to display at the top of the menu.
      * @param {HTMLElement} container - The container element to add the items to.
      * @param {boolean} [isSubMenu] - Determines wether this menu is a child of another menu.
      * @param {HTMLElement} [subMenuHeader] - The header to display for the sub menu.
@@ -180,6 +181,7 @@ class TVMenu {
                 };
                 this.#createItemTree(
                     item.children,
+                    "",
                     _,
                     true,
                     item.text,
