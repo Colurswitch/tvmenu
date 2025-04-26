@@ -17,6 +17,9 @@ class TVMenu {
         this.dialogContainer.classList.add("hidden");
         this.mainInnerDialog = document.createElement("tvm-dialog");
 
+        this.lastFocusableElement = null;
+        this.nextFocusableElement = null;
+
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
         this.#createItemTree(this.items, this.header, this.mainInnerSection);
@@ -62,7 +65,7 @@ class TVMenu {
         }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
-            if (idx == 0) $newItem.classList.add("selected");
+            if (idx == 0 && !isSubMenu) $newItem.focus();
             if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
             else {
@@ -248,80 +251,20 @@ class TVMenu {
         var $selectedItem;
         var $selectedItemIndex;
         if (evt.target.closest("input")) return;
-        this.moveSelection(evt.key == "ArrowUp" ? "up" : (evt.key == "ArrowDown" ? "down" : (evt.key == "ArrowLeft" ? "left" : "right")))
-        /*if (this.dialogContainer.classList.contains("hidden")) {
-            this.menuContainer.querySelectorAll("tvm-item:not(.is-separator)").forEach(el => {
-                if (el.classList.contains("selected")) {
-                    $selectedItem = el;
-                    $selectedItemIndex = [...this.menuContainer.querySelectorAll("tvm-item:not(.is-separator)")].indexOf(el);
-                    evt.preventDefault();
-                    switch (evt.key) {
-                        case "ArrowUp":
-                            if ($selectedItem.previousElementSibling) {
-                                $selectedItem = $selectedItem.previousElementSibling
-                                $selectedItem.previousElementSibling.classList.add("selected");
-                                $selectedItem.classList.remove("selected");
-                                while ($selectedItem.classList.contains("is-separator")) {
-                                    $selectedItem = $selectedItem.previousElementSibling;
-                                    $selectedItem.previousElementSibling.classList.add("selected");
-                                    $selectedItem.classList.remove("selected");
-                                }
-                                $selectedItem.scrollIntoView({ block: "center" })
-                            }
-                            break;
-                        case "ArrowDown":
-                            if ($selectedItem.nextElementSibling) {
-                                $selectedItem = $selectedItem.nextElementSibling;
-                                $selectedItem.nextElementSibling.classList.add("selected");
-                                $selectedItem.classList.remove("selected");
-                                while ($selectedItem.classList.contains("is-separator")) {
-                                    $selectedItem = $selectedItem.nextElementSibling;
-                                    $selectedItem.nextElementSibling.classList.add("selected");
-                                    $selectedItem.classList.remove("selected");
-                                }
-                                $selectedItem.scrollIntoView({ block: "center" });
-                            }
-                            break;
-                        case "Enter":
-                            $selectedItem.click();
-                            break;
-                        case "Backtick":
-                            this.menuContainer.classList.toggle("hidden");
-                            break;
-                    }
-                }
-            });
-            
-        } else {
-            // The dialog is visible, so handle key events for the dialog's actions.
-            // Only preventDefault() if there is no input field in focus.
-            if (!evt.target.closest("input")) evt.preventDefault();
-            this.mainInnerDialog.querySelectorAll("tvm-dialog-actions > button").forEach(el => {
-                if (el.classList.contains("active")) {
-                    $selectedItem = el;
-                    $selectedItemIndex = [...this.mainInnerDialog.querySelectorAll("tvm-dialog-actions > button")].indexOf(el);
-                    switch (evt.key) {
-                        case "ArrowLeft":
-                            if ($selectedItem.previousElementSibling) {
-                                $selectedItem = $selectedItem.previousElementSibling;
-                                $selectedItem.previousElementSibling.classList.add("active");
-                                $selectedItem.classList.remove("active");
-                            }
-                            break;
-                        case "ArrowRight":
-                            if ($selectedItem.nextElementSibling) {
-                                $selectedItem = $selectedItem.nextElementSibling;
-                                $selectedItem.nextElementSibling.classList.add("active");
-                                $selectedItem.classList.remove("active");
-                            }
-                            break;
-                        case "Enter":
-                            $selectedItem.click();
-                    }
-                }
-            });
-            
-        }*/
+        evt.preventDefault();
+        switch (evt.key) {
+            case "ArrowDown":
+                this.moveSelection("down");
+            case "ArrowUp":
+                this.moveSelection("up");
+            case "ArrowLeft":
+                this.moveSelection("left");
+            case "ArrowRight":
+                this.moveSelection("right");
+            case "Enter":
+                this.select();
+        }
+        
     }
 
     /**
@@ -359,97 +302,62 @@ class TVMenu {
         switch (direction) {
             case "left":
                 if (!this.dialogContainer.classList.contains("hidden")) {
-                    if (this.dialogContainer.querySelector("tvm-dialog-actions button.active").previousElementSibling) {
+                    if (this.dialogContainer.querySelector("tvm-dialog-actions button:focus").previousElementSibling) {
                         this.dialogContainer
                           .querySelector("tvm-dialog-actions button.active")
-                          .previousElementSibling.classList.add("active");
-                        this.dialogContainer
-                          .querySelector("tvm-dialog-actions button.active")
-                          .classList.remove("active");
+                          .previousElementSibling.focus();
                     }
                 } break;
             case "right":
                 if (!this.dialogContainer.classList.contains("hidden")) {
-                    if (this.dialogContainer.querySelector("tvm-dialog-actions button.active").nextElementSibling) {
+                    if (this.dialogContainer.querySelector("tvm-dialog-actions button:focus").nextElementSibling) {
                         this.dialogContainer
                           .querySelector("tvm-dialog-actions button.active")
-                          .classList.remove("active");
-                        this.dialogContainer
-                          .querySelector("tvm-dialog-actions button.active")
-                          .nextElementSibling.classList.add("active");
+                          .nextElementSibling.focus();
                     }
                 } break;
             case "up":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    if (this.#findMatchingElementBefore(this.menuContainer.querySelector("tvm-item.selected"),"tvm-item:not(.is-separator):not(.selected)")) {
-                        /*this.menuContainer
-                          .querySelector("tvm-item.selected")
-                          .classList.remove("selected");
+                    if (this.menuContainer.querySelector("tvm-item:focus").previousElementSibling) {
                         this.menuContainer
-                          .querySelector("tvm-item.selected")
-                          .previousElementSibling.classList.add("selected");
-                        while (this.menuContainer.querySelector("tvm-item.selected").classList.contains("is-separator")) {
+                            .querySelector("tvm-item:focus")
+                            .previousElementSibling.focus();
+                        while (this.menuContainer.querySelector("tvm-item:focus").matches("tvm-item.is-separator")) {
                             this.menuContainer
-                                .querySelector("tvm-item.selected")
-                                .classList.remove("selected");
-                            this.menuContainer
-                                .querySelector("tvm-item.selected")
-                                .previousElementSibling.classList.add("selected");
+                                .querySelector("tvm-item:focus")
+                                .previousElementSibling.focus();
                         }
-                        this.menuContainer
-                            .querySelector("tvm-item.selected")
-                            .scrollIntoView({ block: "center" });*/
-                        this.menuContainer
-                            .querySelector("tvm-item.selected")
-                            .classList.remove("selected");
-                        this.#findMatchingElementBefore(
-                          this.menuContainer.querySelector("tvm-item.selected"),
-                          "tvm-item:not(.is-separator):not(.selected)"
-                        ).classList.add("selected");
-                        this.menuContainer
-                            .querySelector("tvm-item.selected")
-                            .scrollIntoView({ block: "center" });
                     }
                 } break;
             case "down":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    if (
-                      this.#findMatchingElementAfter(
-                        this.menuContainer.querySelector("tvm-item.selected"),
-                        "tvm-item:not(.is-separator):not(.selected)"
-                      )
-                    ) {
-                      /*this.menuContainer
-                        .querySelector("tvm-item.selected")
-                        .classList.remove("selected");
-                      this.menuContainer
-                        .querySelector("tvm-item.selected")
-                        .nextElementSibling.classList.add("selected");
-                      while (
+                    if (this.menuContainer.querySelector("tvm-item:focus").nextElementSibling) {
                         this.menuContainer
-                          .querySelector("tvm-item.selected")
-                          .classList.contains("is-separator")
-                      ) {
-                        this.menuContainer
-                          .querySelector("tvm-item.selected")
-                          .classList.remove("selected");
-                        this.menuContainer
-                          .querySelector("tvm-item.selected")
-                          .nextElementSibling.classList.add("selected");
-                      }*/
-                        this.menuContainer
-                        .querySelector("tvm-item.selected")
-                        .classList.remove("selected");
-                        this.#findMatchingElementAfter(
-                            this.menuContainer.querySelector("tvm-item.selected"),
-                            "tvm-item:not(.is-separator):not(.selected)"
-                          ).classList.add("selected");
-                        this.menuContainer
-                            .querySelector("tvm-item.selected")
-                            .scrollIntoView({ block: "center" });
+                            .querySelector("tvm-item:focus")
+                            .nextElementSibling.focus();
+                        while (this.menuContainer.querySelector("tvm-item:focus").matches("tvm-item.is-separator")) {
+                            this.menuContainer
+                                .querySelector("tvm-item:focus")
+                                .nextElementSibling.focus();
+                        }
                     }
                 } break;
         }
+    }
+
+    /**
+     * Simulates a click on the currently focused menu item or dialog button.
+     *
+     * If the menu is currently visible (i.e. the dialog is not visible), the currently focused menu item is clicked.
+     * If the dialog is currently visible, the currently focused button is clicked.
+     *
+     * @returns {void}
+     */
+    select() {
+        if (this.dialogContainer.classList.contains("hidden"))
+            this.menuContainer.querySelector("tvm-item:focus").click();
+        else
+            this.dialogContainer.querySelector("tvm-dialog-actions button:focus").click();
     }
 
     /**
@@ -525,6 +433,7 @@ class TVMenu {
                     this.dialogContainer.innerHTML = "";
                     resolve($newSelect.value);
                 };
+                $okButton.classList.add("active");
                 $cancelButton = document.createElement("button");
                 $cancelButton.innerHTML = "Cancel";
                 $cancelButton.onclick = () => {
@@ -588,6 +497,7 @@ class TVMenu {
                 this.dialogContainer.innerHTML = "";
                 resolve(true);
             };
+            $okButton.classList.add("active");
             const $cancelButton = document.createElement("button");
             $cancelButton.innerHTML = "No";
             $cancelButton.onclick = () => {

@@ -58,6 +58,9 @@ Control the menu:
 menu.show() // Show the menu
 menu.hide() // Hide the menu
 menu.toggle() // Toggle the menu
+
+menu.moveSelection(direction: "up" | "down" | "left" | "right") // Move the selection in the menu. You can specify the direction to move in.
+menu.select() // Select the current item
 ```
 
 Display messages:
