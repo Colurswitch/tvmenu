@@ -65,6 +65,7 @@ class TVMenu {
         }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
+            $newItem.tabIndex = -1; // This element is focusable, but not part of the tab order
             if (idx == 0 && !isSubMenu) $newItem.focus();
             if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
@@ -254,15 +255,15 @@ class TVMenu {
         evt.preventDefault();
         switch (evt.key) {
             case "ArrowDown":
-                this.moveSelection("down");
+                this.moveSelection("down"); break;
             case "ArrowUp":
-                this.moveSelection("up");
+                this.moveSelection("up"); break;
             case "ArrowLeft":
-                this.moveSelection("left");
+                this.moveSelection("left"); break;
             case "ArrowRight":
-                this.moveSelection("right");
+                this.moveSelection("right"); break;
             case "Enter":
-                this.select();
+                this.select(); break;
         }
         
     }
@@ -379,6 +380,7 @@ class TVMenu {
                 this.dialogContainer.innerHTML = "";
                 resolve();
             };
+            $acceptButton.focus();
             $newActions.appendChild($acceptButton);
             this.mainInnerDialog.appendChild($newActions);
             this.dialogContainer.appendChild(this.mainInnerDialog);

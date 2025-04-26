@@ -65,9 +65,32 @@ menu.select() // Select the current item
 
 Display messages:
 ```javascript
-menu.alert(message: string) => Promise<void> // Display a generic alert message. You can specify a promise callback if you want to execute code after the user clicks "OK".
-menu.prompt(message: string, defaultValue?: string | number | boolean | "", type: "HTML Input type", onchange?: (string | number | boolean) => void, min?: number | null, max?: number | null) => Promise<string | number | boolean> // Display a prompt message. You can specify a function to execute when the user changes the value of the input. You can specify a minimum and maximum value for the "number" or "range" input. You can specify a promise callback, called with the user's input, if you want to execute code after the user clicks "OK".
-menu.confirm(message: string) => Promise<boolean> // Display a confirmation message. You can specify a promise callback if you want to execute code after the user clicks "Yes" or "No".
+/**
+ * Display a generic alert message. You can specify a promise callback if you want to execute code after the user clicks "OK".
+ * 
+ * @param {string} message - The message to display to the user.
+ * @returns {Promise<void>} A promise that resolves when the user clicks "OK".
+ */
+menu.alert(message: string) => Promise<void>
+/**
+ * Display a prompt message.
+ * 
+ * @param {string} message - The message to display to the user.
+ * @param {string | number | boolean | ""} [defaultValue] - The default value for the input. If not specified, the default value for the input is an empty string.
+ * @param {"text" | "number" | "range" | "color" | "checkbox" | "password"} [type="text"] - The type of input to display. If not specified, the type is "text".
+ * @param {(value: string | number | boolean) => void} [onchange] - A callback function to execute when the user changes the value of the input. If not specified, no callback is executed.
+ * @param {number | null} [min] - The minimum value for the "number" or "range" input. If not specified, the minimum value is null.
+ * @param {number | null} [max] - The maximum value for the "number" or "range" input. If not specified, the maximum value is null.
+ * @returns {Promise<string | number | boolean>} A promise that resolves to the user's input. If the user clicks "Cancel", the promise is rejected with a string "The user clicked Cancel".
+ */
+menu.prompt(message: string, defaultValue?: string | number | boolean | "", type?: "text" | "number" | "range" | "color" | "checkbox" | "password", onchange?: (value: string | number | boolean) => void, min?: number | null, max?: number | null) => Promise<string | number | boolean>
+/**
+ * Display a confirmation message.
+ * 
+ * @param {string} message - The message to display to the user.
+ * @returns {Promise<boolean>} A promise that resolves to true if the user clicks "Yes", and false if the user clicks "No".
+ */
+menu.confirm(message: string) => Promise<boolean> 
 ```
 
 Danger zone:
