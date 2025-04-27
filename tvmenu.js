@@ -185,8 +185,10 @@ class TVMenu {
                         `;
                     });
                 else if (item.type == "link") {
-                    if (item.openInNewTab) window.open(item.link);
-                    else window.open(item.link, "_self");
+                    const $newLink = document.createElement("a");
+                    $newLink.href = item.href;
+                    $newLink.target = item.openInNewTab ? "_self" : "_blank";
+                    $newLink.click();
                 }
                 $newItem.innerHTML = `
                     <span class="icon">
