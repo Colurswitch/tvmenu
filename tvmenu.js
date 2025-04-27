@@ -17,12 +17,15 @@ class TVMenu {
         this.dialogContainer.classList.add("hidden");
         this.mainInnerDialog = document.createElement("tvm-dialog");
 
-        this.lastFocusableElement = null;
-        this.nextFocusableElement = null;
+        /** @type {HTMLElement[]} */
+        this.elementTree = [];
+        this.currentSelectionPath = ""; // Example: 5.children.2..., If empty, defaults to self.
+        this.selectedIndex = 0;
 
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
-        this.#createItemTree(this.items, this.header, this.mainInnerSection);
+        this.#createItemTree(this.items, this.header, this.mainInnerSection, this.elementTree);
+        this.select("0");
         document.body.appendChild(this.menuContainer);
         document.body.appendChild(this.dialogContainer);
     }
@@ -36,14 +39,16 @@ class TVMenu {
      * @param {boolean} [isSubMenu] - Determines wether this menu is a child of another menu.
      * @param {HTMLElement} [subMenuHeader] - The header to display for the sub menu.
      * @param {HTMLElement} [parentMenu] - The parent menu of this menu.
+     * @param {HTMLElement[]} [parentArray] - The array of parent items.
      * @private
      */
-    #createItemTree(items, header, container, isSubMenu, subMenuHeader, parentMenu) {
+    #createItemTree(items, header, container, parentArray, isSubMenu, subMenuHeader, parentMenu) {
         if (isSubMenu) {
             const $newHeader = document.createElement("h1");
             $newHeader.innerHTML = subMenuHeader;
             container.appendChild($newHeader);
             const $backItem = document.createElement("tvm-item");
+            parentArray.push($backItem);
             $backItem.innerHTML = `
                 <span class="icon">
                     <i class="material-icons">arrow_back</i>
@@ -56,6 +61,7 @@ class TVMenu {
                 container.classList.remove("active");
                 parentMenu.classList.add("active");
             };
+            $backItem.tabIndex = -1; // This element is focusable, but not part of the tab order
             container.appendChild($backItem);
         }
         if (header) {
@@ -66,7 +72,8 @@ class TVMenu {
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
             $newItem.tabIndex = -1; // This element is focusable, but not part of the tab order
-            if (idx == 0 && !isSubMenu) $newItem.focus();
+            if (item.type != "separator") parentArray.push($newItem);
+            if (idx == 0 && !isSubMenu) $newItem.classList.add("active")
             if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
             else {
@@ -187,17 +194,41 @@ class TVMenu {
                     $newItem.parentElement.classList.remove("active");
                     _.classList.add("active");
                 };
+                $newItem.tvm_children = [];
                 this.#createItemTree(
                     item.children,
                     "",
                     _,
+                    $newItem.tvm_children,
                     true,
                     item.text,
                     container
                 );
             }
             container.appendChild($newItem);
+            if (idx == 0 && !isSubMenu) $newItem.focus();
         });
+    }
+
+    /**
+     * Returns the property at the given path in the given object.
+     * The path is a string that can refer to either an object property or an array index.
+     * For example, if the path is "a.b.c", then the method will return the value of obj.a.b.c.
+     * If the path contains an array index, the method will parse the index as an integer.
+     * If the path does not refer to a valid property, the method will return undefined.
+     * @param {object} obj - The object to search.
+     * @param {string} pathString - The path to the property to return.
+     * @returns {*} The property at the given path, or undefined if no such property exists.
+     */
+    #getPropertyByPath(obj, pathString) {
+        const keys = pathString.split('.'); // Convert the path string into an array of keys
+        return keys.reduce((current, key) => {
+            if (current && Array.isArray(current)) {
+                // If it's an array, parse the key as an index
+                return current[parseInt(key, 10)];
+            }
+            return current && current[key];
+        }, obj); // Traverse the object/array step by step
     }
 
     /**
@@ -290,16 +321,6 @@ class TVMenu {
      * @param {string} direction - The direction to move the selection. Must be one of: "left", "right", "up", or "down".
      */
     moveSelection(direction) {
-        if (
-            direction !== "left" &&
-            direction !== "right" &&
-            direction !== "up" &&
-            direction !== "down"
-        ) {
-            throw new Error(
-              "TVMenu: direction must be one of: left, right, up, or down"
-            );
-        }
         switch (direction) {
             case "left":
                 if (!this.dialogContainer.classList.contains("hidden")) {
@@ -319,30 +340,24 @@ class TVMenu {
                 } break;
             case "up":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    if (this.menuContainer.querySelector("tvm-item:focus").previousElementSibling) {
-                        this.menuContainer
-                            .querySelector("tvm-item:focus")
-                            .previousElementSibling.focus();
-                        while (this.menuContainer.querySelector("tvm-item:focus").matches("tvm-item.is-separator")) {
-                            this.menuContainer
-                                .querySelector("tvm-item:focus")
-                                .previousElementSibling.focus();
-                        }
-                    }
+                    this.#getPropertyByPath(
+                      this.elementTree,
+                      this.currentSelectionPath
+                    )[this.selectedIndex - 1].focus();
+                    this.selectedIndex--;
                 } break;
             case "down":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    if (this.menuContainer.querySelector("tvm-item:focus").nextElementSibling) {
-                        this.menuContainer
-                            .querySelector("tvm-item:focus")
-                            .nextElementSibling.focus();
-                        while (this.menuContainer.querySelector("tvm-item:focus").matches("tvm-item.is-separator")) {
-                            this.menuContainer
-                                .querySelector("tvm-item:focus")
-                                .nextElementSibling.focus();
-                        }
-                    }
+                    this.#getPropertyByPath(
+                      this.elementTree,
+                      this.currentSelectionPath
+                    )[this.selectedIndex + 1].focus();
+                    this.selectedIndex++;
                 } break;
+            default:
+                throw new Error(
+                  "TVMenu: direction must be one of: left, right, up, or down"
+                ); break;
         }
     }
 
@@ -351,10 +366,18 @@ class TVMenu {
      *
      * If the menu is currently visible (i.e. the dialog is not visible), the currently focused menu item is clicked.
      * If the dialog is currently visible, the currently focused button is clicked.
+     * If path is provided, the item or button at that path is clicked
+     * 
+     * @param {string} [path]  - The path to the item or button to click. If not provided, the currently focused item or button is clicked.
      *
      * @returns {void}
      */
-    select() {
+    select(path) {
+        if (path && path.length > 0) {
+            const $item = this.#getPropertyByPath(this.elementTree, path);
+            if (!$item) throw new Error("TVMenu: path is invalid");
+            $item.classList.add("active");
+        }
         if (this.dialogContainer.classList.contains("hidden"))
             this.menuContainer.querySelector("tvm-item:focus").click();
         else
