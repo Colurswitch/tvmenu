@@ -5,8 +5,10 @@ Implements a nice TV-style menu for your HTML apps.
 Add the following HTML to your ```<head>``` tag:
 ```html
 <link rel="stylesheet" href="https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.css" />
+<script src="https://cdn.jsdelivr.net/npm/keyboard-navigator@latest/lib/keyboard-navigator.js"></script>
 <script src="https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.js">
 ```
+
 ### Styling 
 You can change the styling of the menu by adding the following CSS to your ```<head>``` tag:
 ```css

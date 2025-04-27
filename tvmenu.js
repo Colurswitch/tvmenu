@@ -1,3 +1,5 @@
+//keyboardNavigator.customTabLogic = false;
+
 class TVMenu {
     /**
      * Constructor for TVMenu
@@ -21,11 +23,12 @@ class TVMenu {
         this.elementTree = [];
         this.currentSelectionPath = ""; // Example: 5.children.2..., If empty, defaults to self.
         this.selectedIndex = 0;
+        this.itemCount = 0;
 
         this.menuContainer.appendChild(this.mainInnerSection);
         this.dialogContainer.appendChild(this.mainInnerDialog);
         this.#createItemTree(this.items, this.header, this.mainInnerSection, this.elementTree);
-        this.select("0");
+        //this.select("0");
         document.body.appendChild(this.menuContainer);
         document.body.appendChild(this.dialogContainer);
     }
@@ -43,6 +46,7 @@ class TVMenu {
      * @private
      */
     #createItemTree(items, header, container, parentArray, isSubMenu, subMenuHeader, parentMenu) {
+        this.itemCount++;
         if (isSubMenu) {
             const $newHeader = document.createElement("h1");
             $newHeader.innerHTML = subMenuHeader;
@@ -61,7 +65,7 @@ class TVMenu {
                 container.classList.remove("active");
                 parentMenu.classList.add("active");
             };
-            $backItem.tabIndex = -1; // This element is focusable, but not part of the tab order
+            $backItem.tabIndex = this.itemCount; // This element is focusable, but not part of the tab order
             container.appendChild($backItem);
         }
         if (header) {
@@ -71,7 +75,7 @@ class TVMenu {
         }
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
-            $newItem.tabIndex = -1; // This element is focusable, but not part of the tab order
+            $newItem.tabIndex = this.itemCount; // This element is focusable, but not part of the tab order
             if (item.type != "separator") parentArray.push($newItem);
             if (idx == 0 && !isSubMenu) $newItem.classList.add("active")
             if (item.type == "separator") $newItem.classList.add("is-separator");
@@ -221,14 +225,8 @@ class TVMenu {
      * @returns {*} The property at the given path, or undefined if no such property exists.
      */
     #getPropertyByPath(obj, pathString) {
-        const keys = pathString.split('.'); // Convert the path string into an array of keys
-        return keys.reduce((current, key) => {
-            if (current && Array.isArray(current)) {
-                // If it's an array, parse the key as an index
-                return current[parseInt(key, 10)];
-            }
-            return current && current[key];
-        }, obj); // Traverse the object/array step by step
+        const keys = pathString.split('.'); // Convert the path string to an array of keys
+        return keys.reduce((current, key) => current && current[key], obj); // Traverse the object step by step
     }
 
     /**
