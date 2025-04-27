@@ -66,7 +66,7 @@ class TVMenu {
                 parentMenu.classList.add("active");
             };
             this.itemCount++;
-            $backItem.tabIndex = this.itemCount; // This element is focusable, but not part of the tab order
+            $backItem.tabIndex = 0; // This element is focusable, but not part of the tab order
             container.appendChild($backItem);
         }
         if (header) {
@@ -77,8 +77,10 @@ class TVMenu {
         items.forEach((item, idx) => {
             const $newItem = document.createElement("tvm-item");
             this.itemCount++;
-            $newItem.tabIndex = this.itemCount; // This element is focusable, but not part of the tab order
-            if (item.type != "separator") parentArray.push($newItem);
+            if (item.type != "separator") {
+                parentArray.push($newItem);
+                $newItem.tabIndex = 0;
+            }
             if (idx == 0 && !isSubMenu) $newItem.classList.add("active")
             if (item.type == "separator") $newItem.classList.add("is-separator");
             if (item.default) $newItem.dataset.tvm_value = item.default;
