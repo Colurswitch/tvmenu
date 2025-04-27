@@ -56,9 +56,9 @@ const menu = new TVMenu({
     ]
 })
 ```
-<!--
+
 ### Methods
-Bind the menu:
+<!--Bind the menu:
 ```javascript
 menu.subscribeToKeyboard() // Subscribe to keyboard events
 menu.unsubscribeFromKeyboard() // Unsubscribe from keyboard events

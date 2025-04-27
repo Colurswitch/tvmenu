@@ -202,12 +202,7 @@ class TVMenu {
             if (item.type == "folder") {
                 const _ = document.createElement("tvm-section");
                 this.menuContainer.appendChild(_);
-                $newItem.onclick = (evt) => {
-                    $newItem.parentElement.classList.remove("active");
-                    _.classList.add("active");
-                    this.currentNavigationTargetArray = $newItem.tvm_children;
-                    this.selectedIndex = 0;
-                };
+                
                 $newItem.tvm_children = [];
                 this.#createItemTree(
                     item.children,
@@ -218,6 +213,13 @@ class TVMenu {
                     item.text,
                     container
                 );
+                $newItem.onclick = (evt) => {
+                    $newItem.parentElement.classList.remove("active");
+                    _.classList.add("active");
+                    item.onSelect(evt);
+                    this.currentNavigationTargetArray = $newItem.tvm_children;
+                    this.selectedIndex = 0;
+                };
             }
             container.appendChild($newItem);
             if (idx == 0 && !isSubMenu) $newItem.focus();
