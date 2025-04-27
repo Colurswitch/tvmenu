@@ -8,6 +8,10 @@ Add the following HTML to your ```<head>``` tag:
 <script src="https://cdn.jsdelivr.net/npm/keyboard-navigator@latest/lib/keyboard-navigator.js"></script>
 <script src="https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.js">
 ```
+You can also use ES6 imports if you prefer that.
+```javascript
+import { TVMenu, TVMenuItem } from "https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.js";
+```
 
 ### Styling 
 You can change the styling of the menu by adding the following CSS to your ```<head>``` tag:
@@ -24,11 +28,14 @@ Create a new TVMenu instance:
 const menu = new TVMenu({
     items: [ // Array of menu items. Required.
         new TVMenuItem({
-            [text: string], // Text to display in the menu item. Required unless type is "separator".
-            [icon: string | HTMLElement | null], // Valid HTML to display as an icon. Required unless type is "separator".
+            [text: string], 
+            // Text to display in the menu item. Required unless type is "separator".
+            [icon: string | HTMLElement | null], 
+            // Valid HTML to display as an icon. Required unless type is "separator".
             type: "button" | "checkbox" | "enum" | "color" | "folder" | "input" | "separator" | "link", 
             // Type of menu item.
-            [onSelect: () => void | null], // Callback function to execute when the item has been clicked or selected. Optional but won't be used if type is "separator".
+            [onSelect: () => void | null], 
+            // Callback function to execute when the item has been clicked or selected. Optional but won't be used if type is "separator".
             [possibleValues: {text: string, value: string}[] | null], 
             // Array of values for the enum type. Required if type is "enum".
             [onChange: (string) => void | null], 
@@ -48,12 +55,13 @@ const menu = new TVMenu({
     ]
 })
 ```
+<!--
 ### Methods
 Bind the menu:
 ```javascript
 menu.subscribeToKeyboard() // Subscribe to keyboard events
 menu.unsubscribeFromKeyboard() // Unsubscribe from keyboard events
-```
+```-->
 
 Control the menu:
 ```javascript

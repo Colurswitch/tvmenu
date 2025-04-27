@@ -21,6 +21,8 @@ class TVMenu {
 
         /** @type {HTMLElement[]} */
         this.elementTree = [];
+        /** @type {HTMLElement[]} */
+        this.currentNavigationTargetArray = [];
         this.currentSelectionPath = ""; // Example: 5.children.2..., If empty, defaults to self.
         this.selectedIndex = 0;
         this.itemCount = 0;
@@ -64,6 +66,8 @@ class TVMenu {
             $backItem.onclick = () => {
                 container.classList.remove("active");
                 parentMenu.classList.add("active");
+                this.currentNavigationTargetArray = parentArray;
+                this.selectedIndex = 0;
             };
             this.itemCount++;
             $backItem.tabIndex = 0; // This element is focusable, but not part of the tab order
@@ -201,6 +205,8 @@ class TVMenu {
                 $newItem.onclick = (evt) => {
                     $newItem.parentElement.classList.remove("active");
                     _.classList.add("active");
+                    this.currentNavigationTargetArray = $newItem.tvm_children;
+                    this.selectedIndex = 0;
                 };
                 $newItem.tvm_children = [];
                 this.#createItemTree(
@@ -342,18 +348,22 @@ class TVMenu {
                 } break;
             case "up":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    this.#getPropertyByPath(
-                      this.elementTree,
-                      this.currentSelectionPath
-                    )[this.selectedIndex - 1].focus();
+                    this.currentNavigationTargetArray[
+                      this.selectedIndex - 1
+                    ].classList.add("selected");
+                    this.currentNavigationTargetArray[
+                        this.selectedIndex
+                    ].classList.remove("selected");
                     this.selectedIndex--;
                 } break;
             case "down":
                 if (this.dialogContainer.classList.contains("hidden")) {
-                    this.#getPropertyByPath(
-                      this.elementTree,
-                      this.currentSelectionPath
-                    )[this.selectedIndex + 1].focus();
+                    this.currentNavigationTargetArray[
+                        this.selectedIndex + 1
+                    ].classList.add("selected");
+                    this.currentNavigationTargetArray[
+                        this.selectedIndex
+                    ].classList.remove("selected");
                     this.selectedIndex++;
                 } break;
             default:
@@ -368,23 +378,12 @@ class TVMenu {
      *
      * If the menu is currently visible (i.e. the dialog is not visible), the currently focused menu item is clicked.
      * If the dialog is currently visible, the currently focused button is clicked.
-     * If path is provided, the item or button at that path is clicked
      * 
-     * @param {string} [path]  - The path to the item or button to click. If not provided, the currently focused item or button is clicked.
-     *
      * @returns {void}
      */
-    select(path) {
-        if (path && path.length > 0) {
-            const $item = this.#getPropertyByPath(this.elementTree, path);
-            if (!$item) throw new Error("TVMenu: path is invalid");
-            $item.classList.add("active");
-        }
+    select() {
         if (this.dialogContainer.classList.contains("hidden"))
-            this.#getPropertyByPath(
-              this.elementTree,
-              this.currentSelectionPath
-            )[this.selectedIndex].click();
+            this.menuContainer.querySelector("tvm-item.selected").click();
         else
             this.dialogContainer.querySelector("tvm-dialog-actions button:focus").click();
     }
@@ -408,6 +407,7 @@ class TVMenu {
                 this.dialogContainer.innerHTML = "";
                 resolve();
             };
+            $acceptButton.tabIndex = -1;
             $acceptButton.focus();
             $newActions.appendChild($acceptButton);
             this.mainInnerDialog.appendChild($newActions);
@@ -438,7 +438,7 @@ class TVMenu {
     ) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.dialogContainer.innerHTML = "<div></div>";
+            this.mainInnerDialog.remove();
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             var $newActions;
@@ -516,7 +516,7 @@ class TVMenu {
     confirm(message) {
         return new Promise((resolve) => {
             this.dialogContainer.classList.remove("hidden");
-            this.dialogContainer.innerHTML = "<div></div>";
+            this.mainInnerDialog.remove();
             const $newContent = document.createElement("tvm-dialog-content");
             $newContent.innerHTML = message;
             const $newActions = document.createElement("tvm-dialog-actions");
@@ -652,3 +652,5 @@ class TVMenuItem {
         return str == "true" || str == "1";
     }
 }
+
+export { TVMenu, TVMenuItem };
