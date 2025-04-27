@@ -173,7 +173,7 @@ class TVMenu {
                         `;
                     });
                 else if (item.type == "link") {
-                    if (item.openInNewTab) window.open(item.link, "_blank");
+                    if (item.openInNewTab) window.open(item.link);
                     else window.open(item.link, "_self");
                 }
                 $newItem.innerHTML = `
@@ -379,7 +379,10 @@ class TVMenu {
             $item.classList.add("active");
         }
         if (this.dialogContainer.classList.contains("hidden"))
-            this.menuContainer.querySelector("tvm-item:focus").click();
+            this.#getPropertyByPath(
+              this.elementTree,
+              this.currentSelectionPath
+            )[this.selectedIndex].click();
         else
             this.dialogContainer.querySelector("tvm-dialog-actions button:focus").click();
     }
@@ -631,7 +634,7 @@ class TVMenuItem {
         this.max = options.max;
         this.default = options.default;
         this.href = options.href;
-        this.openInNewTab = options.openInNewTab;
+        this.openInNewTab = options.openInNewTab | true;
         this.value = this.default;
 
         this.domElement = document.createElement("tvm-item");
