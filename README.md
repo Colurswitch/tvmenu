@@ -8,10 +8,11 @@ Add the following HTML to your ```<head>``` tag:
 <script src="https://cdn.jsdelivr.net/npm/keyboard-navigator@latest/lib/keyboard-navigator.js"></script>
 <script src="https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.js">
 ```
-You can also use ES6 imports if you prefer that.
+<!--You can also use ES6 imports if you prefer that.
 ```javascript
 import { TVMenu, TVMenuItem } from "https://github.com/Colurswitch/tvmenu/raw/refs/heads/main/tvmenu.js";
 ```
+-->
 
 ### Styling 
 You can change the styling of the menu by adding the following CSS to your ```<head>``` tag:
